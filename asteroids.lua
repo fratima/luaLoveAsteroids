@@ -2,6 +2,9 @@
  
 asteroids = {}
 local world = {}
+local player = {}
+local enemy = {}
+local bonus
 local boxes = {}
 local shots = {}
 local boxTime = 5 -- initial number of seconds before a net block is spawned
@@ -26,17 +29,18 @@ local bonusExists = false
   end
   
   function asteroids.createPlayer()
-    spaceShip={0,-10,5,10,0,0,-5,10,0,-10}  
+    local spaceShip={0,-10,5,10,0,0,-5,10,0,-10}  
     player =  world:newPolygonCollider(spaceShip)
     player:setX(400)
     player:setY(300)
     player:setCollisionClass('Player')
+    return player
   end
   
   --the enemy should cross the screen and shoot the player
   function asteroids.createEnemy()
     if not enemyExists then
-      enemyShip={-10,0,-7,-5,7,-5,10,0,-15,0,-10,10,10,10,15,0}  
+      local enemyShip={-10,0,-7,-5,7,-5,10,0,-15,0,-10,10,10,10,15,0}  
       enemy = world:newPolygonCollider(enemyShip)
       enemy:setCollisionClass('Enemy')
       local x,y = getSpawnArea(player:getX(),player:getY(), 350)
@@ -45,6 +49,7 @@ local bonusExists = false
       enemy:applyLinearImpulse(love.math.random(-20,20),love.math.random(-20,20))
       lastTimeofEnemyCreation = love.timer.getTime()
       enemyExists = true
+      return enemy
     end
   end
   
@@ -62,22 +67,22 @@ local bonusExists = false
   
   function asteroids.createBox()
     local x,y = asteroids.getSpawnArea(player:getX(),player:getY(), 350)
-      box = world:newRectangleCollider( x, y, 50, 50)
-      box:setRestitution(0.9)
-      box:applyAngularImpulse(love.math.random(-6000,6000))
-      box:applyLinearImpulse(love.math.random(-300,300),love.math.random(-300,300))
-      box:setCollisionClass('Box')
-      table.insert(boxes, box)
-      lastTimeofBoxCreation = love.timer.getTime()
-   end
+    local box = world:newRectangleCollider( x, y, 50, 50)
+    box:setRestitution(0.9)
+    box:applyAngularImpulse(love.math.random(-6000,6000))
+    box:applyLinearImpulse(love.math.random(-300,300),love.math.random(-300,300))
+    box:setCollisionClass('Box')
+    table.insert(boxes, box)
+    lastTimeofBoxCreation = love.timer.getTime()
+  end
    
   function asteroids.createBonus()
      if not bonusExists then
      local x,y = asteroids.getSpawnArea(player:getX(),player:getY(),200)
-      bonus = world:newBSGRectangleCollider(x, y, 10, 10, 4)
-      bonus:setCollisionClass('Bonus')
-      lastTimeofBonusCreation = love.timer.getTime()
-      bonusExists = true
+     local bonus = world:newBSGRectangleCollider(x, y, 10, 10, 4)
+     bonus:setCollisionClass('Bonus')
+     lastTimeofBonusCreation = love.timer.getTime()
+     bonusExists = true
     end
   end
   
@@ -101,7 +106,7 @@ local bonusExists = false
    
    
    function asteroids.createShot(angle)
-      shot = world:newCircleCollider(player:getX() + math.sin(angle)*20,player:getY() + math.cos(angle)*-20 ,3)
+      local shot = world:newCircleCollider(player:getX() + math.sin(angle)*20,player:getY() + math.cos(angle)*-20 ,3)
       shot.cTime = love.timer.getTime()
       shot:setMass(1)
       shot:applyLinearImpulse(math.sin(angle)*800,math.cos(angle)*-800)

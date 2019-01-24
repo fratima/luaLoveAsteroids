@@ -5,6 +5,7 @@ local graphics =  require 'graphics'
 local sounds =    require 'sounds'
 
 local world
+local player
 local explosion
 local thrust
 local stars
@@ -19,7 +20,7 @@ function love.load()
     sounds.loadSounds()
     
     world = asteroids.createWorld(wf)
-    asteroids.createPlayer()
+    player = asteroids.createPlayer()
     for nr = 1,5 do
       asteroids.createBox()
     end
